@@ -701,6 +701,18 @@
 
 		const rel = env.sunRel * Math.PI / 180;
 		const elev = env.sun.elev * Math.PI / 180;
+
+		/* ---- 3D 世界坐标约定（与 2D 的虚拟画布不是同一套，千万别混）----
+		 *   +y = 上；相机在 z=+60 看向 -z；three.js 里相机右手 = +x
+		 *   所以「面向窗户」时 -z 是窗户朝外方向（windowDir=180 → -z = 南），
+		 *   而 +x = 西（面朝南时西在右手边，东在左手边）。
+		 *
+		 *   罗盘方位角 A → 朝阳光的单位向量 = (-sin A, ·, cos A)
+		 *   验证：A=180(南) → (0,0,-1) ✓；A=90(东) → (-1,0,0) = -x = 屏幕左 ✓
+		 *
+		 * env.sunRel = azim − winAzim，于是展开后就是 (sin rel, 0, −cos rel)。
+		 * （若把 +x 当成东、写成 (-sin rel, -cos rel)，下午的太阳会跑到窗户左边。）
+		 */
 		const horiz = new THREE.Vector3(Math.sin(rel), 0, -Math.cos(rel));
 		const dir = horiz.clone().multiplyScalar(Math.cos(elev))
 			.add(new THREE.Vector3(0, Math.sin(elev), 0)).normalize();
@@ -876,16 +888,18 @@
 // 表单里点「载入默认布局」会回到这一份；编辑后会自动存进浏览器，
 // 关掉页面再打开会接着上次那份，不会再丢。
 		{ x: -46, z: -20, w: 32, d: 17, floors: 6, yaw: -23, hero: false, near: true, visible: true },
-		{ x: -30, z: -150, w: 17, d: 15, floors: 10, yaw: -12, hero: false, near: false, visible: true },
+		{ x: -30, z: -129, w: 39, d: 15, floors: 5, yaw: 26, hero: false, near: false, visible: true },
 		{ x: -21, z: -190, w: 27, d: 22, floors: 17, yaw: 15, hero: false, near: false, visible: true },
-		{ x: 50, z: -170, w: 24, d: 22, floors: 15, yaw: 4, hero: false, near: false, visible: true },
-		{ x: 50, z: -134, w: 14, d: 13, floors: 11, yaw: 8, hero: false, near: false, visible: true },
-		{ x: 8, z: -95, w: 20, d: 16, floors: 5, yaw: -34, hero: false, near: true, visible: true },
-		{ x: 74, z: -175, w: 30, d: 26, floors: 7, yaw: 5, hero: true, near: false, visible: true },
-		{ x: 118, z: -205, w: 46, d: 34, floors: 15, yaw: 9, hero: false, near: false, visible: true },
-		{ x: 172, z: -215, w: 40, d: 30, floors: 16, yaw: 14, hero: false, near: false, visible: true },
-		{ x: -54, z: -120, w: 18, d: 16, floors: 12, yaw: 30, hero: false, near: true, visible: true },
-		{ x: -17, z: -60, w: 40, d: 19, floors: 4, yaw: 26, hero: false, near: false, visible: true },
+		{ x: 64, z: -178, w: 51, d: 42, floors: 15, yaw: 4, hero: false, near: false, visible: true },
+		{ x: 50, z: -134, w: 14, d: 13, floors: 11, yaw: 8, hero: false, near: false, visible: false },
+		{ x: 15, z: -148, w: 43, d: 10, floors: 4, yaw: -21, hero: false, near: true, visible: true },
+		{ x: -10, z: -23, w: 24, d: 16, floors: 5, yaw: -63, hero: true, near: false, visible: true },
+		{ x: 52, z: -24, w: 31, d: 34, floors: 6, yaw: 9, hero: false, near: false, visible: true },
+		{ x: 47, z: -75, w: 18, d: 30, floors: 9, yaw: 4, hero: false, near: false, visible: true },
+		{ x: -54, z: -145, w: 18, d: 16, floors: 12, yaw: 30, hero: false, near: true, visible: true },
+		{ x: 11, z: -80, w: 20, d: 50, floors: 3, yaw: -77, hero: false, near: false, visible: true },
+		{ x: 13, z: -250, w: 20, d: 20, floors: 8, yaw: 31, hero: false, near: false, visible: true },
+		{ x: -86, z: -140, w: 47, d: 20, floors: 8, yaw: 63, hero: false, near: false, visible: true },
 	];
 
 	/* 归一化：手贴/导入的 JSON 可能缺字段，补齐后再用，

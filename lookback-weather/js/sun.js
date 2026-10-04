@@ -74,7 +74,13 @@
 
 		/* 真太阳时：UTC 分钟 + 时差方程 + 4×经度 */
 		const tst = utcMin + eqTime + 4 * lon;
-		const ha = (tst / 4 - 180) * RAD; // 时角（弧度）
+		/* 时角必须折回 -180..180。
+		 * tst/4 是「当地真太阳时 + 经度修正」，东经/西经会让它冲出 0..360。
+		 * cos(ha) 是周期的，所以算高度角没事；但下面用 `ha > 0` 判上午/下午
+		 * 会被判反 —— 表现为清晨/傍晚的太阳跑到窗户的另一边（东西镜像）。
+		 * 例：北京 lon=116.4，本地 5 点 -> tst/4=434.9 -> ha=254.9 -> 误判为下午。*/
+		const haDeg = (((tst / 4 - 180) % 360) + 540) % 360 - 180;
+		const ha = haDeg * RAD; // 时角（弧度）
 
 		const latR = lat * RAD;
 		const cosZ = Math.min(1, Math.max(-1,
