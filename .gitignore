@@ -1,0 +1,36 @@
+# -----------------------------------------------------------------------
+# 版权素材：不进仓库
+#
+# assets/ 下的原作美术是从 Wallpaper Engine 工坊 3365960230
+# 《蓦然回首结尾动态时间变化》（作者 被_整除）的 scene.pkg 里解出来的，
+# 属于第三方作品，不能随仓库分发。克隆后请自行准备（见 assets/README.md）。
+# assets/city/ 是另一套来路不明的亚洲旧楼素材，同样排除。
+# -----------------------------------------------------------------------
+lookback-weather/assets/*.png
+lookback-weather/assets/city/
+
+# 原作解包的中间产物
+pkg/
+preview.gif
+prev.jpg
+p1024.jpg
+p1924.jpg
+p2560.jpg
+
+# 根目录的调试截图（几十张迭代过程留档，不入库）
+/*.png
+/*.jpg
+/*.gif
+/*.jpeg
+# 例外：文档要用的图
+!/docs/preview.png
+
+# 意外产物 / 构建缓存
+floors*
+__pycache__/
+*.pyc
+*.log
+UTC
+.DS_Store
+Thumbs.db
+desktop.ini

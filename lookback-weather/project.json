@@ -1,0 +1,439 @@
+{
+	"file": "index.html",
+	"type": "web",
+	"title": "蓦然回首 · 实时天气与真实日照",
+	"description": "实时当地天气与真实太阳位置驱动的《蓦然回首》结尾场景。支持自动定位城市、窗户朝向、锁定时刻。天气数据来自 open-meteo.com（免费、无需密钥）。\n\n本地测试素材来自工坊 3365960230，作者 被_整除，仅供本地调试；公开发布前请替换为你自己的美术。",
+	"contentrating": "Everyone",
+	"tags": [
+		"Anime"
+	],
+	"visibility": "private",
+	"preview": "preview.png",
+	"general": {
+		"supportsaudioprocessing": true,
+		"properties": {
+			"hudTip": {
+				"order": 1,
+				"text": "说明：太阳位置按你所在城市经纬度实时计算，断网也能用；天气需要联网获取。"
+			},
+			"locateMode": {
+				"order": 10,
+				"type": "combo",
+				"text": "定位方式",
+				"options": [
+					{
+						"label": "自动（IP 定位）",
+						"value": "auto"
+					},
+					{
+						"label": "手动输入城市名",
+						"value": "manual"
+					},
+					{
+						"label": "手动输入经纬度",
+						"value": "latlon"
+					}
+				],
+				"value": "auto"
+			},
+			"cityInput": {
+				"order": 11,
+				"type": "textinput",
+				"condition": "locateMode.value == 'manual'",
+				"text": "城市名",
+				"value": "北京"
+			},
+			"latLonInput": {
+				"order": 12,
+				"type": "textinput",
+				"condition": "locateMode.value == 'latlon'",
+				"text": "纬度,经度",
+				"value": "39.9042,116.4074"
+			},
+			"solarMode": {
+				"order": 20,
+				"type": "combo",
+				"text": "太阳位置来源",
+				"options": [
+					{
+						"label": "真实太阳（按城市）",
+						"value": "real"
+					},
+					{
+						"label": "跟随系统时钟",
+						"value": "clock"
+					},
+					{
+						"label": "手动锁定时刻",
+						"value": "manual"
+					}
+				],
+				"value": "real"
+			},
+			"manualHour": {
+				"order": 21,
+				"type": "slider",
+				"condition": "solarMode.value == 'manual'",
+				"text": "锁定时刻（小时）",
+				"min": 0,
+				"max": 23,
+				"step": 1,
+				"precision": 0,
+				"value": 18
+			},
+			"windowDir": {
+				"order": 30,
+				"type": "combo",
+				"text": "窗户朝向",
+				"options": [
+					{
+						"label": "正北",
+						"value": 0
+					},
+					{
+						"label": "东北",
+						"value": 45
+					},
+					{
+						"label": "正东",
+						"value": 90
+					},
+					{
+						"label": "东南",
+						"value": 135
+					},
+					{
+						"label": "正南",
+						"value": 180
+					},
+					{
+						"label": "西南",
+						"value": 225
+					},
+					{
+						"label": "正西",
+						"value": 270
+					},
+					{
+						"label": "西北",
+						"value": 315
+					}
+				],
+				"value": 180
+			},
+			"windowFine": {
+				"order": 31,
+				"type": "slider",
+				"text": "朝向微调（度）",
+				"min": -45,
+				"max": 45,
+				"step": 5,
+				"precision": 0,
+				"value": 0
+			},
+			"weatherAuto": {
+				"order": 40,
+				"type": "bool",
+				"text": "跟随当地实时天气",
+				"value": true
+			},
+			"cloudLowOv": {
+				"condition": "!weatherAuto.value",
+				"max": 100,
+				"min": 0,
+				"precision": 0,
+				"step": 1,
+				"text": "低云量 (%)",
+				"type": "slider",
+				"value": 30,
+				"order": 41
+			},
+			"cloudMidOv": {
+				"condition": "!weatherAuto.value",
+				"max": 100,
+				"min": 0,
+				"precision": 0,
+				"step": 1,
+				"text": "中云量 (%)",
+				"type": "slider",
+				"value": 25,
+				"order": 42
+			},
+			"cloudHighOv": {
+				"condition": "!weatherAuto.value",
+				"max": 100,
+				"min": 0,
+				"precision": 0,
+				"step": 1,
+				"text": "高云量 (%)",
+				"type": "slider",
+				"value": 15,
+				"order": 43
+			},
+			"rainOverride": {
+				"order": 44,
+				"type": "slider",
+				"condition": "!weatherAuto.value",
+				"text": "降雨概率（手动覆盖，0-100%）",
+				"min": 0,
+				"max": 100,
+				"step": 5,
+				"precision": 0,
+				"value": 0
+			},
+			"windOverride": {
+				"order": 45,
+				"type": "slider",
+				"condition": "!weatherAuto.value",
+				"text": "风速（手动覆盖，km/h）",
+				"min": 0,
+				"max": 80,
+				"step": 1,
+				"precision": 0,
+				"value": 10
+			},
+			"windDirOv": {
+				"condition": "!weatherAuto.value",
+				"options": [
+					{
+						"label": "北风（吹向南）",
+						"value": 0
+					},
+					{
+						"label": "东北风",
+						"value": 45
+					},
+					{
+						"label": "东风（吹向西）",
+						"value": 90
+					},
+					{
+						"label": "东南风",
+						"value": 135
+					},
+					{
+						"label": "南风（吹向北）",
+						"value": 180
+					},
+					{
+						"label": "西南风",
+						"value": 225
+					},
+					{
+						"label": "西风（吹向东）",
+						"value": 270
+					},
+					{
+						"label": "西北风",
+						"value": 315
+					}
+				],
+				"order": 46,
+				"text": "风向（来向）",
+				"type": "combo",
+				"value": 270
+			},
+			"wmoOverride": {
+				"condition": "!weatherAuto.value",
+				"options": [
+					{
+						"label": "自动推断",
+						"value": -1
+					},
+					{
+						"label": "0 晴",
+						"value": 0
+					},
+					{
+						"label": "1 大部晴朗",
+						"value": 1
+					},
+					{
+						"label": "2 多云",
+						"value": 2
+					},
+					{
+						"label": "3 阴",
+						"value": 3
+					},
+					{
+						"label": "45 雾",
+						"value": 45
+					},
+					{
+						"label": "51 小毛毛雨",
+						"value": 51
+					},
+					{
+						"label": "53 毛毛雨",
+						"value": 53
+					},
+					{
+						"label": "55 浓毛毛雨",
+						"value": 55
+					},
+					{
+						"label": "61 小雨",
+						"value": 61
+					},
+					{
+						"label": "63 中雨",
+						"value": 63
+					},
+					{
+						"label": "65 大雨",
+						"value": 65
+					},
+					{
+						"label": "71 小雪",
+						"value": 71
+					},
+					{
+						"label": "73 中雪",
+						"value": 73
+					},
+					{
+						"label": "75 大雪",
+						"value": 75
+					},
+					{
+						"label": "80 阵雨",
+						"value": 80
+					},
+					{
+						"label": "81 强阵雨",
+						"value": 81
+					},
+					{
+						"label": "82 暴雨",
+						"value": 82
+					},
+					{
+						"label": "95 雷阵雨",
+						"value": 95
+					},
+					{
+						"label": "99 强雷暴冰雹",
+						"value": 99
+					}
+				],
+				"order": 47,
+				"text": "WMO 天气码（强制）",
+				"type": "combo",
+				"value": -1
+			},
+			"autoRefreshMin": {
+				"order": 47,
+				"type": "slider",
+				"text": "天气刷新间隔（分钟）",
+				"min": 5,
+				"max": 180,
+				"step": 5,
+				"precision": 0,
+				"value": 30
+			},
+			"leafSize": {
+				"order": 50,
+				"type": "slider",
+				"text": "叶子透明度",
+				"min": 0,
+				"max": 1,
+				"step": 0.05,
+				"fraction": true,
+				"precision": 2,
+				"value": 0.8
+			},
+			"rainSize": {
+				"order": 51,
+				"type": "slider",
+				"text": "雨量",
+				"min": 0,
+				"max": 1,
+				"step": 0.05,
+				"fraction": true,
+				"precision": 2,
+				"value": 0.6
+			},
+			"shaftSize": {
+				"order": 52,
+				"type": "slider",
+				"text": "光柱强度",
+				"min": 0,
+				"max": 1.5,
+				"step": 0.05,
+				"fraction": true,
+				"precision": 2,
+				"value": 1
+			},
+			"sunShade": {
+				"fraction": true,
+				"max": 1.4,
+				"min": 0,
+				"order": 54,
+				"precision": 2,
+				"step": 0.05,
+				"text": "太阳阴影强度",
+				"type": "slider",
+				"value": 1.0
+			},
+			"city3d": {
+				"order": 55,
+				"text": "three.js 3D 漫画外景",
+				"type": "bool",
+				"value": true
+			},
+			"city3dScale": {
+				"fraction": true,
+				"max": 1,
+				"min": 0.3,
+				"order": 56,
+				"precision": 2,
+				"step": 0.05,
+				"text": "3D 渲染分辨率比例",
+				"type": "slider",
+				"value": 0.6
+			},
+			"titleText": {
+				"order": 60,
+				"type": "textinput",
+				"text": "标题文字",
+				"value": "LOOK BACK"
+			},
+			"signText": {
+				"order": 61,
+				"type": "textinput",
+				"text": "署名",
+				"value": ""
+			},
+			"showClock": {
+				"order": 62,
+				"type": "bool",
+				"text": "显示日期与时钟",
+				"value": true
+			},
+			"parallax": {
+				"order": 63,
+				"type": "slider",
+				"text": "鼠标视差",
+				"min": 0,
+				"max": 1.5,
+				"step": 0.05,
+				"fraction": true,
+				"precision": 2,
+				"value": 0.35
+			},
+			"devPanel": {
+				"order": 89,
+				"text": "调参面板（实时改参数）",
+				"type": "bool",
+				"value": false
+			},
+			"showHud": {
+				"order": 90,
+				"type": "bool",
+				"text": "显示调试信息",
+				"value": false
+			}
+		}
+	}
+}
