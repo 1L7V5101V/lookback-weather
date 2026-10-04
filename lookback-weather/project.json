@@ -414,13 +414,24 @@
 			"parallax": {
 				"order": 63,
 				"type": "slider",
-				"text": "鼠标视差",
+				"text": "鼠标视差（2D）",
 				"min": 0,
 				"max": 1.5,
 				"step": 0.05,
 				"fraction": true,
 				"precision": 2,
 				"value": 0.35
+			},
+			"parallax3d": {
+				"order": 64,
+				"type": "slider",
+				"text": "窗外视差（摄像机）",
+				"min": 0,
+				"max": 2,
+				"step": 0.05,
+				"fraction": true,
+				"precision": 2,
+				"value": 0.55
 			},
 			"devPanel": {
 				"order": 89,

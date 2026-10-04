@@ -94,8 +94,16 @@
 		 *   最高楼顶几乎顶到上沿 -> 最高楼约在 75° 仰角方向
 		 * 所以：相机基本水平，只压 2°，楼群集中在正前方一小片。 */
 		this.camera = new THREE.PerspectiveCamera(34, 16 / 9, 0.5, 4200);
-		this.camera.position.set(0, 0, 60);
-		this.camera.lookAt(0, -6, -160);
+		/* 视差用「移动摄像机」实现，而不是平移场景：
+		 * 室内（屋内.png）是另一张静态画布，摄像机一动，只有窗外的 3D 会
+		 * 按真实透视分层错开——近处楼动得多、远处楼几乎不动，人物/家具那层
+		 * 完全静止，这才像真的架了台摄像机，而不是整张图在滑动。 */
+		this.camBase = new THREE.Vector3(0, 0, 60);
+		this.camTarget = new THREE.Vector3(0, -6, -160);
+		this.camera.position.copy(this.camBase);
+		this.camera.lookAt(this.camTarget);
+		this._pxT = 0; this._pyT = 0;   // 目标视差（鼠标）
+		this._px = 0; this._py = 0;     // 当前值（阻尼后）
 
 		this._buildSky();
 		this._buildLights();
@@ -820,6 +828,19 @@
 		}
 	};
 
+	/* ---------------- 视差：移动摄像机 ---------------- */
+	/* px/py 是 -1..1 的鼠标位置（已经过 main.js 阻尼），strength 是属性里的滑杆。
+	 * 横向幅度要够大才能看出层次，但也不能大到近景楼直接滑出窗洞；
+	 * 竖向幅度按 0.45 缩放，摄像机更像“微抬/微俯”而不是上下飘。 */
+	City3D.prototype.setParallax = function (px, py, strength) {
+		const k = (strength === undefined ? 1 : strength) * 16;
+		this._pxT = (px || 0) * k;
+		this._pyT = (py || 0) * k * 0.45;
+	};
+	City3D.prototype.resetParallax = function () {
+		this._pxT = 0; this._pyT = 0;
+	};
+
 	City3D.prototype.render = function (dt, env) {
 		if (!this.ok || !this.enabled) return;
 		this._dt = Math.min(0.05, dt);
@@ -856,6 +877,23 @@
 			}
 			p.needsUpdate = true;
 		}
+
+		/* 摄像机视差：帧率无关的指数阻尼，然后平移 + 重新对准远处目标点。
+		 * 重新 lookAt 是必要的：纯平移时近景楼会直接滑出画面，加一点点偏转
+		 * （移动 8 单位、目标在 220 单位外 -> 约 2°）既守住构图，又保留视差。 */
+		const damp = 1 - Math.pow(0.0015, this._dt);
+		this._px += (this._pxT - this._px) * damp;
+		this._py += (this._pyT - this._py) * damp;
+		if (this._px || this._py) {
+			this.camera.position.set(
+				this.camBase.x + this._px, this.camBase.y + this._py, this.camBase.z);
+			this.camera.lookAt(this.camTarget);
+		} else if (this._lastPx || this._lastPy) {
+			/* 鼠标回到中间，把偏转也归位 */
+			this.camera.position.copy(this.camBase);
+			this.camera.lookAt(this.camTarget);
+		}
+		this._lastPx = this._px; this._lastPy = this._py;
 
 		this.renderer.render(this.scene, this.camera);
 	};

@@ -159,6 +159,7 @@
 			signText: src.signText !== undefined ? String(src.signText) : def.signText,
 			showClock: bool(src.showClock, def.showClock),
 			parallax: num(src.parallax, def.parallax),
+		parallax3d: num(src.parallax3d, def.parallax3d),
 			showHud: bool(src.showHud, def.showHud),
 			devPanel: bool(src.devPanel, def.devPanel),
 			cloudLowOv: num(src.cloudLowOv, def.cloudLowOv),
@@ -254,16 +255,22 @@
 		/* 鼠标视差平滑 */
 		mouse.x += (mouse.tx - mouse.x) * 0.045;
 		mouse.y += (mouse.ty - mouse.y) * 0.045;
-		scene.offset.x = -mouse.x * 120 * LB.props.parallax;
-		scene.offset.y = -mouse.y * 60 * LB.props.parallax;
 
 		env = LB.Weather.computeEnv(new Date());
 
 		/* 3D 场景用同一份 env，室内外的光因此永远一致 */
 		if (renderer.use3D()) {
+			/* 3D：视差 = 移动摄像机。室内那张静态画布不动，所以人物、书桌、
+			 * 显示器全是静止的，只有窗外的楼按真实透视分层错开。 */
+			scene.offset.x = 0;
+			scene.offset.y = 0;
+			city3d.setParallax(mouse.x, mouse.y, LB.props.parallax3d);
 			city3d.setEnv(env);
 			city3d.render(dt, env);
 		} else {
+			/* 2D：没有深度信息，只能整层平移（实际只影响天空层） */
+			scene.offset.x = -mouse.x * 120 * LB.props.parallax;
+			scene.offset.y = -mouse.y * 60 * LB.props.parallax;
 			city3d.setVisible(false);
 		}
 		/* 音频只做很轻的调制 */

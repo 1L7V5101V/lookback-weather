@@ -50,6 +50,7 @@ window.LB = window.LB || {};
 		signText: '',
 		showClock: true,
 		parallax: 0.35,
+		parallax3d: 0.55,    // 3D 模式下移动摄像机的幅度（0=锁死，1=窗宽约 1/4）
 		showHud: false,
 		devPanel: false,
 		sunShade: 1.0,       // 2.5D 太阳阴影强度（仅 2D 模式），0=关闭

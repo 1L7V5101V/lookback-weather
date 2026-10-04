@@ -276,7 +276,11 @@
 		const s4 = section(body, '画面');
 		slider(s4, '叶子透明度', { key: 'leafSize', min: 0, max: 1, step: 0.05 });
 		slider(s4, '雨量', { key: 'rainSize', min: 0, max: 1, step: 0.05 });
-		slider(s4, '鼠标视差', { key: 'parallax', min: 0, max: 1.5, step: 0.05 });
+		slider(s4, '鼠标视差（2D）', { key: 'parallax', min: 0, max: 1.5, step: 0.05 });
+		slider(s4, '窗外视差（摄像机）', {
+			key: 'parallax3d', min: 0, max: 2, step: 0.05,
+			hint: '3D 模式下移动摄像机而不是平移图层：人物、书桌、显示器全静止，只有窗外的楼按透视分层错开'
+		});
 		slider(s4, '太阳阴影强度', { key: 'sunShade', min: 0, max: 1.4, step: 0.05,
 			hint: '2.5D 高度场投影（仅 2D 模式）；0 关闭，回退到纯调色' });
 		checkbox(s4, 'three.js 3D 外景', { key: 'city3d',
