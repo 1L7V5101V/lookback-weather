@@ -77,10 +77,19 @@ out = bytearray()
 out += b'LBM1'
 out += struct.pack('<I', len(parts))
 for name, mat, pos, nrm, uv, idx in parts:
-    # 居中到 XZ 原点，Y 从 0 起
+    # 居中到 XZ 原点，Y 从 0 起。
+    # 注意：这一步是在 Blender 内部做的，FBX 导入器已经按 Z-up 把模型摆正，
+    # 所以顶点是 (x, y, z)，其中 z 才是楼高（y 是平面尺寸）。
     npos = []
+    nnrm = []
     for i in range(0, len(pos), 3):
-        npos += [pos[i] - cx, pos[i + 1] - mn[1], pos[i + 2] - cz]
+        x, y, z = pos[i], pos[i + 1], pos[i + 2]
+        # ---- 关键：Blender 是 Z-up，three.js 是 Y-up ----
+        # 绕 X 轴 -90°：(x, y, z) -> (x, z, -y)
+        # 这是一个真正的旋转（det=+1，手性不变），所以三角形绕序不用翻转。
+        # 不做这一步的话，three.js 里 Y 会拿到 Blender 的 Z（真正的楼高），
+        # 整栋楼就会「横躺」在屏幕纵深上。
+        npos += [x - cx, z, -(y - cz)]
     nb = name.encode('utf-8')
     mb = mat.encode('utf-8')
     out += struct.pack('<I', len(nb)) + nb

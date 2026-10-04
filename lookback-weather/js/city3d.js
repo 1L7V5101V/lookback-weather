@@ -312,7 +312,7 @@
 
 			if (hero) {
 				/* 主角楼直接用素材本体（住宅体块 + 屋顶杂物），不再套方块 */
-				this._placeKit(sp[0], Y0, sp[1], sp[2], sp[4], sp[6] || 0);
+				this._placeKit(sp[0], Y0, sp[1], sp[2], sp[4], sp[6] || 0, sp[3]);
 				continue;
 			}
 
@@ -365,7 +365,7 @@
 					}
 				}
 				/* 屋顶模型挂在这栋顶上 */
-				this._placeKit(sp[0], Y0 + h, sp[1], sp[2], sp[3]);
+				this._placeKit(sp[0], Y0 + h, sp[1], sp[2], 2, 0, sp[3]);
 			}
 		}
 
@@ -529,17 +529,19 @@
 	};
 
 	/* 把素材摆成一整栋楼：底面落在街面 Y0，高度对齐 floors*FLOOR_H */
-	City3D.prototype._placeKit = function (x, groundY, z, w, floors, yawDeg) {
+	City3D.prototype._placeKit = function (x, groundY, z, w, floors, yawDeg, d) {
 		if (!this.kitGroup) return false;
 		const THREE = this.THREE;
 		const k = this.kitGroup.clone();
 		const bb = new THREE.Box3().setFromObject(k);
 		const sz = bb.getSize(new THREE.Vector3());
-		/* 先按目标高度缩放，再限制水平不要超出给定楼宽 */
+		/* 先按目标高度缩放，再限制水平不要超出给定楼宽/楼深。
+		   注意：build_001.bin 导出时已把 Blender 的 Z-up 绕 X 转成 three.js 的 Y-up，
+		   所以这里 sz.y 就是真实的楼高，sz.x/sz.z 是平面尺寸。*/
 		const targetH = floors * 4.6;
 		let kk = targetH / Math.max(0.001, sz.y);
-		const maxX = (w * 1.25) / Math.max(0.001, sz.x);
-		kk = Math.min(kk, maxX);
+		kk = Math.min(kk, (w * 1.25) / Math.max(0.001, sz.x));
+		if (d > 0) kk = Math.min(kk, (d * 1.9) / Math.max(0.001, sz.z));
 		k.scale.set(kk, kk, kk);
 		const b2 = new THREE.Box3().setFromObject(k);
 		k.position.set(
